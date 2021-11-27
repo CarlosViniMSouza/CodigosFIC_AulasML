@@ -31,7 +31,7 @@ plt.show() # --> vai mostrar o grafico.
 p = model.predict_proba(X)
 print(p)
 
-print("Acuracia: ", model.score(X, y))
+print("Acuracia: ", round(model.score(X, y), 2))
 
 
 # Modelo de Regressao Logistica usa a funcao logistica:
@@ -78,4 +78,4 @@ model = LogisticRegression(solver='lbfgs', multi_class='auto', max_iter=1000)
 model.fit(x_train, y_train)
 
 y_pred = model.predict(x_test)
-print("Acuracia: ", model.score(x_test, y_test))
+print("Acuracia: ", round(model.score(x_test, y_test), 2))
