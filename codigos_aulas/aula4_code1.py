@@ -19,40 +19,40 @@ print(data.head(10))
 data = data.to_numpy()
 nrow, ncol = data.shape
 y = data[:, -1]
-X = data[:, 0:ncol - 1]
+X = data[:, 0:ncol-1]
 
 ## Selecionando os conjuntos de Treino e Teste:
 from sklearn.model_selection import train_test_split
 p = 0.7
-X_train, x_test, y_train, y_test = train_test_split(X, y, train_size = p)
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size = p, random_state = 42)
 
 ## Classificacao: implementacao do Metodo:
 def likelyhood(y, Z):
 
-  def gaussian(x, mu, sig):
-    p = (1/np.sqrt(2 * np.pi * sig)) * np.exp((-1/2) * ((x - mu)/sig)**2)
-    return p
+    def gaussian(x, mu, sig):
 
-  lk = 1
-  for j in np.arange(0, Z.shape[1]):
-    m = np.mean(Z[:, j])
-    s = np.std(Z[:, j])
-    lk = lk * gaussian(y[j], m, s)
-  return lk
+        return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
+
+    prob = 1
+    for j in np.arange(0, Z.shape[1]):
+        m = np.mean(Z[:, j])
+        s = np.std(Z[:, j])      
+        prob = prob*gaussian(y[j], m, s)
+    return prob
 
 ## Estimacao de cada classe:
 P = pd.DataFrame(data=np.zeros((X_test.shape[0], len(classes))), columns = classes)
 
 for i in np.arange(0, len(classes)):
   elements = tuple(np.where(y_train == classes[i]))
-  Z = X_train[elements,:][0]
-  for j in np.arange(0,X_test.shape[0]):
-    x = X_test[j,:]
-    pj = likelyhood(x,Z)
-    P[classes[i]][j] = pj*len(elements)/X_train.shape[0]
+  Z = X_train[elements, :][0]
+  for j in np.arange(0, X_test.shape[0]):
+      x = X_test[j, :]
+      pj = likelyhood(x, Z)
+      P[classes[i]][j] = pj*len(elements)/X_train.shape[0]
 
 # Para as observações no conjunto de teste, a probabilidade pertencer a cada classe:
-P.head(10)
+print(P.head(10))
 
 from sklearn.metrics import accuracy_score
 
@@ -64,3 +64,7 @@ for i in np.arange(0, P.shape[0]):
 y_pred = np.array(y_pred, dtype=str)
 score = accuracy_score(y_pred, y_test)
 print('Accuracy:', score)
+
+"""
+A parte que usa biblioteca scikit-learn esta no arquivo 'aula4_code2.py'
+"""
