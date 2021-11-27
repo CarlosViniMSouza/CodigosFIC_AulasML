@@ -1,81 +1,66 @@
-import math
+## Classificador Naive Bayes:
 import random
-import numpy as np
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
-from scipy.special import expit
-from sklearn import metrics
-from sklearn import linear_model
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
 
-X = np.arange(12).reshape(-1, 1)
-y = np.array([0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1])
-plt.plot(X, y, 'ko')
-
-# Ajustando o Modelo de Regressao Logistica:
-model = linear_model.LogisticRegression(C=1e5)
-model.fit(X, y)
-loss = expit(X * model.coef_ + model.intercept_).ravel()
-plt.plot(X, loss, color='red', linewidth=3)
-
-# Ajustando o Model de Regressao Linear:
-linear = linear_model.LinearRegression()
-linear.fit(X, y)
-plt.plot(X, linear.coef_ * X + linear.intercept_, linewidth=2, linestyle='dashed')
-plt.axhline(.5, color='.5')
-plt.savefig('logistic.eps')
-plt.show() # --> vai mostrar o grafico.
-
-p = model.predict_proba(X)
-print(p)
-
-print("Acuracia: ", round(model.score(X, y), 2))
-
-
-# Modelo de Regressao Logistica usa a funcao logistica:
-x = np.linspace(-10, 10, 100)
-z = 1/(1 + np.exp(-x))
-
-plt.figure(figsize=(6, 4))
-plt.plot(x, z)
-plt.xlabel("x", fontsize=15)
-plt.ylabel("h(x)", fontsize=15)
-plt.savefig('logistic-function.eps')
-plt.show() # --> vai mostrar o grafico.
-
-# Classificacao de Dados:
-"""
 random.seed(42)
-data = pd.read_csv('', header=(0))
-data = data.dropna(axis='')
+
+data = pd.read_csv('data/Iris.csv', header=0)
+data = data.dropna(axis='rows')
 
 classes = np.array(pd.unique(data[data.columns[-1]]), dtype=str)
 
-print("Num. Linhas & Colunas da matriz de atributos: ", data.shape)
+print("Num. Linhas & Colunas da Matriz de Atributos: ", data.shape)
 attributes = list(data.columns)
-data.head(10)
-"""
 
-# Convertendo para o formato Numpy:
-"""
+print(data.head(10))
+
 data = data.to_numpy()
 nrow, ncol = data.shape
 y = data[:, -1]
 X = data[:, 0:ncol - 1]
 
-scaler = StandardScaler().fit(X)
-X = scaler.transform(X)
-"""
+## Selecionando os conjuntos de Treino e Teste:
+from sklearn.model_selection import train_test_split
+p = 0.7
+X_train, x_test, y_train, y_test = train_test_split(X, y, train_size = p)
 
-# Selecionamos os conjuntos de teste e treino:
-p = 0.2
-x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=p, random_state=4)
+## Classificacao: implementacao do Metodo:
+def likelyhood(y, Z):
 
-# Classificando por Regressao Logistica:
-model = LogisticRegression(solver='lbfgs', multi_class='auto', max_iter=1000)
-model.fit(x_train, y_train)
+  def gaussian(x, mu, sig):
+    p = (1/np.sqrt(2 * np.pi * sig)) * np.exp((-1/2) * ((x - mu)/sig)**2)
+    return p
 
-y_pred = model.predict(x_test)
-print("Acuracia: ", round(model.score(x_test, y_test), 2))
+  lk = 1
+  for j in np.arange(0, Z.shape[1]):
+    m = np.mean(Z[:, j])
+    s = np.std(Z[:, j])
+    lk = lk * gaussian(y[j], m, s)
+  return lk
+
+## Estimacao de cada classe:
+P = pd.DataFrame(data=np.zeros((X_test.shape[0], len(classes))), columns = classes)
+
+for i in np.arange(0, len(classes)):
+  elements = tuple(np.where(y_train == classes[i]))
+  Z = X_train[elements,:][0]
+  for j in np.arange(0,X_test.shape[0]):
+    x = X_test[j,:]
+    pj = likelyhood(x,Z)
+    P[classes[i]][j] = pj*len(elements)/X_train.shape[0]
+
+# Para as observações no conjunto de teste, a probabilidade pertencer a cada classe:
+P.head(10)
+
+from sklearn.metrics import accuracy_score
+
+y_pred = []
+for i in np.arange(0, P.shape[0]):
+  c = np.argmax(np.array(P.iloc[[i]]))
+  y_pred.append(P.columns[c])
+
+y_pred = np.array(y_pred, dtype=str)
+score = accuracy_score(y_pred, y_test)
+print('Accuracy:', score)
