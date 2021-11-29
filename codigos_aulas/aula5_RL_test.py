@@ -1,10 +1,21 @@
-from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_iris
+from sklearn.metrics import confusion_matrix
 
-X, y = load_iris(return_X_y=True)
+df = load_iris()
+X = df.data
+y = df.target
 
-clf = LogisticRegression(solver = 'lbfgs', multi_class = 'auto', max_iter = 10000, random_state=2).fit(X, y)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2)
 
-print("\nPrediction: ", clf.predict(X[:2, :]))
-print("\nArray: ", clf.predict_proba(X[:2, :]))
-print("\nAccuracy: ", clf.score(X, y))
+classifier = LogisticRegression()
+classifier.fit(X_train, y_train)
+
+predictions = classifier.predict(X_test)
+print(predictions)
+
+d = {0: 'setosa', 1: 'versicolor', 2: 'virginica'}
+print(list(map(lambda x: d[x], predictions)))
+
+confusion_matrix(y_test, predictions)
