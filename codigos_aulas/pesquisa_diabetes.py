@@ -5,8 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
-var = pd.read_csv('Codigos\data\diabetes\diabetes.csv')
-print(var.head())
+var = pd.read_csv('data/diabetes/diabetes.csv')
 
 # Procuradno informacoes sobre cada coluna:
 print(var.describe())
@@ -35,4 +34,4 @@ logVar.fit(X_train, Y_train)
 
 yPred = logVar.predict(X_test)
 
-print("Acuracia: ", accuracy_score(yPred, Y_test))
+print("Acuracia: ", round(accuracy_score(yPred, Y_test)*100, 2), "%")

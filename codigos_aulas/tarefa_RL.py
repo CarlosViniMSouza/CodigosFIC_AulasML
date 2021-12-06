@@ -63,5 +63,5 @@ X_test = test.drop("PassengerId", axis=1).copy()
 clf = LogisticRegression()  # Inicializa o classificador
 clf.fit(X_train, y_train)   # Treina o classificador
 y_pred_log_reg = clf.predict(X_test)
-acc_log_reg = round( clf.score(X_train, y_train) * 100, 2)
+acc_log_reg = round(clf.score(X_train, y_train) * 100, 2)
 print ("Acuracia: " + str(acc_log_reg) + ' %')
