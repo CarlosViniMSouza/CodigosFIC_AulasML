@@ -1,5 +1,5 @@
 git add .
-git commit -m "Subindo codigo ID3 (me equivoquei no anterior)!"
+git commit -m "Tarefa: Algoritmo ID3 -> concluida"
 git push
 git status
 exit
