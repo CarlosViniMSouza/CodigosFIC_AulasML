@@ -3,9 +3,9 @@ import pandas as pd
 from numpy import log2 as log
 
 eps = np.finfo(float).eps
-var = pd.read_csv("data/titanic/train.csv")
+var = pd.read_csv("../data/titanic/train.csv")
 
-var = var.drop(['Name', 'Ticket', 'Cabin'], axis = 1)
+var = var.drop(['Name', 'Ticket', 'Cabin'], axis=1)
 var = var.dropna()
 var['Age'] = var['Age'].interpolate()
 
@@ -17,6 +17,7 @@ for value in values:
     entropia = entropia + (-(p*log(p)))
 # entropia de todo DB:
 print("Valor da entropia: ", entropia)
+
 
 def tributo_entropia(col):
     y = var['Survived'].unique()
@@ -30,8 +31,9 @@ def tributo_entropia(col):
             p = num/(den+eps)
             e = e + (-(p*log(p+eps)))
         p2 = den/len(var)
-        entropia = entropia + (-(p2*e))
+        entropia = entropia + (-1*(p2*e))
     return abs(entropia)
+
 
 # entropia tendo por base a idade:
 print("Valor da entropia do Atributo (Age): ", tributo_entropia('Age'))
