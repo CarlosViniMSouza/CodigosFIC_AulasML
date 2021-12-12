@@ -1,4 +1,5 @@
 import math
+
 """
 Tabela da Aula em formato de Dicionario:
 
