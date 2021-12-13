@@ -3,7 +3,7 @@ import pandas as pd
 from numpy import log2 as log
 
 eps = np.finfo(float).eps
-var = pd.read_csv("../data/titanic/train.csv")
+var = pd.read_csv("data/titanic/train.csv")
 
 var = var.drop(['Name', 'Ticket', 'Cabin'], axis=1)
 var = var.dropna()
